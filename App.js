@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, StatusBar, Platform, TouchableOpacity, ScrollView} from 'react-native';
+import React, { useState, useRef} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, StatusBar, Platform, TouchableOpacity, ScrollView, Button, Alert, Modal} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 //Views are like Divs
 //Text displays text on screen
@@ -7,143 +7,151 @@ import { Calendar } from 'react-native-calendars';
 //onPress={() => console.log("Text Clicked!")} ... ....In line function
 //const handlePress = () => console.log("Text Pressed!"); ... ...function... ...hook it up to an action like onPress
 //functions need { }...after the arrow when they are doing more than 1 thing
+//array deconstructing: const [current_vale, updater_function] = useState(firstInitialValue);
 
 
 export default function App() {
-  const [name, setName] = useState("Wilson");
-  const [nameColor, setColor] = useState('#25896a5b');
-  const [nameToggle, setToggle] = useState(true);
-  const dateToday = new Date().toISOString().split('T')[0];
+  const [items, insertItems] = useState([]);
+  const scrollRef = useRef(null);
 
-  const [tasks, setTasks] = useState([]);
+  const handleInsertItemPress = () => {
 
-  const nameColor1 = '#ee04eeff';
-  const nameColor2 = '#7a9c00ff';
+    insertItems(previousList => [...previousList, `New Item ${previousList.length + 1}`])
 
-
-  const handlePress = () => console.log("Text Pressed!");
-
-  const addTask = () => {
-    setTasks([...tasks, {id: tasks.length, name: `Task #${tasks.length + 1}` }]);
-    console.log(tasks.length);
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollToEnd({ animated: true});
+    }
+    );
   };
 
-  const changeName = () => {
-    
-    if(nameToggle){
-      setName("Kate!");
-      setColor('#ec04e15b');
-    }
-    else{
-      setName("Wilson");
-      setColor('#0099ffe5');
-    }
-    setToggle(!nameToggle);
-    console.log("Changing the color of name text!");
+
+  const handleRemoveItemPress = (indexToRemove) => {
+    Alert.alert('Remove Task?',
+      'Task will be deleted forever',
+      [{text: 'Cancel', style: 'cancel'}, 
+        {text: 'Delete', style: 'destructive', 
+          onPress: () => { 
+            insertItems(previousList => previousList.filter((_, i) => i !== indexToRemove));
+          },
+        },
+      ]
+    );
   };
 
-  const handleDayPress = (day) => console.log('Selected day:', day.dateString);
 
-
-console.log("App executed");
   return (
-  
-    <SafeAreaView style={styles.backScreen}> 
-      <Text numberOfLines={1} onPress={handlePress} style={styles.header}>Home Maintenance</Text>
-        <View style={styles.calendarBox}>
-          <Calendar
-            style={styles.fullSizeCalendar}
-            onDayPress={handleDayPress}
-            markedDates={{[dateToday]:{ selected: true, marked: true, selectedColor: 'blue'},}}
-            
-            />
-        </View>
+    <SafeAreaView style={styles.appContainer}>
 
-        <ScrollView style={styles.taskListBox}>{
-          //<Text style= {[styles.textTester, {color: nameColor}]}>Hello, my name is {name}</Text>
-          tasks.map(task => (
-            <View key={task.id} style={styles.taskStyle}>
-              <Text>{task.name}</Text>
-            </View>
-          ))  
-        }
+      {/*Container for the Calendar*/}
+      <View style={styles.calendarContainer}>
+        <Calendar
+          style={styles.calendarStyle}
+          firstDay={1}
+          theme={{
+            textDayFontSize: 16,
+            textMonthFontSize: 18,
+            textDayHeaderFontSize: 12,
+          }}
+        
+        />
+      </View>
+
+      {/*Container for the scrollable list of tasks that have been added*/}
+      <View style={styles.listOfTasks}>
+        <ScrollView ref={scrollRef}>
+          {items.map((txt, i) => {
+            return(
+            <TouchableOpacity key={i} style={styles.taskItem} onPress={() => handleRemoveItemPress(i)}>
+              <Text style={styles.taskItemText}>{txt}</Text>
+            </TouchableOpacity>
+            )
+          })}
         </ScrollView>
-
-
-        <TouchableOpacity 
-          style={styles.addTaskBox} 
-          onPress={ () => {
-            //changeName();
-            addTask();
-
-          }
-          
-        } >
-          <Text>Add Task</Text>
+      </View>
+      
+      {/*Container for the Button for adding tasks*/}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.buttonInteractable} onPress={handleInsertItemPress}>
+          <Text>Add Item</Text>
         </TouchableOpacity>
+      </View>
 
+      {/*Container for the Panel for setting up a new task*/}
+      <View>
+          
+      </View>
+      
 
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  backScreen: {
+  appContainer: {
     flex: 1,
-    backgroundColor: '#f3efbbff',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 10,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    
-  },
-
-  calendarBox: {
-    width: 400,
-    height:300,
-    backgroundColor: '#57f5f5ff',
-    margin: 10,
-  },
-
-  fullSizeCalendar: {
-    //flex:1,
-  },
-  taskListBox: {
-    width: 400,
-    height: 300,
-    backgroundColor: '#fdd0c3ff',
-
-    marginTop: 65,
-    borderRadius: 20,
-    
-  },
-
-  taskStyle: {
+    backgroundColor: "#c9ab00ff",
     justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
 
-  addTaskBox: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#b5f3a8ff',
-    margin: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
   },
-
-  header: {
-    fontSize: 24,
+  listOfTasks: {
+    marginTop : StatusBar.currentHeight,
     
-    fontWeight: 'bold',
-    color: '#333',
+    backgroundColor: "#5fe710ff",
+    width: '70%',
+    height: 300,
+    alignSelf: 'center',
+    marginBottom: 30,
+
+    borderWidth: 5,
+    borderColor: "#000000ff",
+
+  },
+  taskItem: {
+    
+    backgroundColor: "#95f199ff",
+    marginBottom: 1,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#000000ff",
+    width: '100%',
+    height: 48,
+
+  },
+  taskItemText: {
+    fontSize: 16,
+    color: "#f100c9ff",
+    alignSelf: "center"
   },
 
-  textTester: {
-    fontSize: 24,
-    color: '#25896a5b'
+  buttonContainer: {
+    width : 100,
+    height: 100,
+    alignSelf: 'center',
+    marginBottom: 50,
+
+  },
+  buttonInteractable: {
+    flex: 1,
+    backgroundColor: '#cc3232ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#000000ff",
 
   },
 
+  calendarContainer: {
+    
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: '#aa9deeff',
+    borderWidth: 2,
+    borderColor: "#000000ff",
+  },
+
+  calendarStyle: {
+
+  },
 
 });
