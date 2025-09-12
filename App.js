@@ -12,7 +12,12 @@ import { Calendar } from 'react-native-calendars';
 
 export default function App() {
   const [items, insertItems] = useState([]);
+  const [visible, setVisible] =useState(false);
   const scrollRef = useRef(null);
+
+  const show = () => setVisible(true);
+  const hide = () => setVisible(false);
+  
 
   const handleInsertItemPress = () => {
 
@@ -71,18 +76,31 @@ export default function App() {
       
       {/*Container for the Button for adding tasks*/}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonInteractable} onPress={handleInsertItemPress}>
+        <TouchableOpacity style={styles.buttonInteractable} onPress={show}>
           <Text>Add Item</Text>
         </TouchableOpacity>
       </View>
 
       {/*Container for the Panel for setting up a new task*/}
-      <View>
-          
-      </View>
-      
+      <Modal visible={visible} transparent animationType='slide'>
+
+          {/*Panel Itself */}
+          <View style={styles.panel}>
+
+          </View>
+
+          {/*CLOSE BUTTON FOR PANEL*/}
+          <View style={styles.panelCloseButtonContainer}>
+            <TouchableOpacity style={styles.closePanelButton} onPress={hide}>
+              <Text style={{fontSize: 28,}}>X</Text>
+            </TouchableOpacity>
+          </View>
+      </Modal>
 
     </SafeAreaView>
+
+
+
   );
 }
 
@@ -152,6 +170,34 @@ const styles = StyleSheet.create({
 
   calendarStyle: {
 
+  },
+
+  taskSetUpContainer: {
+    flex: 1,
+  },
+
+  panel: {
+    flex:1,
+    backgroundColor: 'rgba(66, 66, 66, 0.4)',
+  },
+
+  panelCloseButtonContainer: {
+    position: 'absolute',
+    backgroundColor: "#ecba77ff",
+    width: 50,
+    height: 50,
+    borderRadius: 100,
+    top: 16,
+    right: 16,
+    borderWidth: 3,
+  },
+  closePanelButton: {
+    width:"100%",
+    height: "100%",
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
   },
 
 });
