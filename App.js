@@ -1,5 +1,5 @@
 import React, { useState, useRef} from 'react';
-import { View, Text, StyleSheet, SafeAreaView, StatusBar, Platform, TouchableOpacity, ScrollView, Button, Alert, Modal} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, StatusBar, Platform, TouchableOpacity, ScrollView, Button, Alert, Modal, Pressable, TextInput} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 //Views are like Divs
 //Text displays text on screen
@@ -13,11 +13,25 @@ import { Calendar } from 'react-native-calendars';
 export default function App() {
   const [items, insertItems] = useState([]);
   const [visible, setVisible] =useState(false);
+  const[userChoice, setUserChoice] = useState('weekly');
+
+  const[taskName, setTaskName] = useState('')
+  const[notificationsOn, setNotificationFlag] = useState(false);
+
+
   const scrollRef = useRef(null);
+
+  const repeatOptions = ['weekly', 'biweekly', 'monthly'];
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const show = () => setVisible(true);
   const hide = () => setVisible(false);
   
+
+  const handleRepeatOptionPress = (clickedOption) => {
+    setUserChoice(clickedOption);
+    console.log("User Picked:", clickedOption);
+  }
 
   const handleInsertItemPress = () => {
 
@@ -28,7 +42,6 @@ export default function App() {
     }
     );
   };
-
 
   const handleRemoveItemPress = (indexToRemove) => {
     Alert.alert('Remove Task?',
@@ -43,6 +56,14 @@ export default function App() {
     );
   };
 
+  const  handleTaskNameInput = (newTaskName) => {
+    setTaskName(newTaskName);
+  }
+
+  const handleNotificationToggle = (flag) => {
+    console.log('Toggled Notifications');
+    setNotificationFlag(!flag);
+  }
 
   return (
     <SafeAreaView style={styles.appContainer}>
@@ -87,6 +108,51 @@ export default function App() {
           {/*Panel Itself */}
           <View style={styles.panel}>
 
+            {/*Repeat Selector */}
+            <View style={styles.testBox}>
+              {repeatOptions.map(option => 
+                (
+                <Pressable key={option} onPress={() => handleRepeatOptionPress(option)} style={[styles.repeatStyle, userChoice === option && styles.pillSelectedStyle]}>
+                  <Text style={styles.repeatTextStyle}>{option}</Text>
+                </Pressable>
+                ))}
+              
+            </View>
+
+            {/*Day Selector */}
+            <View style={styles.testBox }> 
+                {/**If Weekly or Bi Weekly, Then show the Day of the Week Picker. If Monthly, Allow user to enter the day of the month, and number of months to wait (1-12) */}
+              <View style={styles.daysBoxContainer}>
+                {daysOfWeek.map(day => (
+                  <Pressable key={day} style={styles.dayBox}>
+                    <Text>
+                      {day}
+                    </Text>
+                  </Pressable>
+                    ))}
+              </View>
+
+            </View>
+
+            {/*Task Name and Notification Selector */}
+            <View style={styles.testBox}>
+                {/**User types a name and then picks whether to have notifications sent to phone or not. */}
+                <Text>Name of Task:</Text>
+                <TextInput placeholder="Task Name Here" value={taskName} onChangeText={handleTaskNameInput}/>
+                <Text>{taskName}</Text>
+
+                <Pressable style={[styles.notificationToggleButtonOff, notificationsOn ? styles.notificationToggleButtonOn : styles.notificationToggleButtonOff ]} onPressIn={ () => handleNotificationToggle(notificationsOn)}>
+                  <Text>Toggle Notification</Text>
+                </Pressable>
+
+            </View>
+          
+            {/*Finalize Task Confirmation Button */}
+            <View style={styles.testBox}>
+                {/**Add the item to the list, Set the variables back to default after finished, and then close the window */}
+                
+            </View>
+
           </View>
 
           {/*CLOSE BUTTON FOR PANEL*/}
@@ -98,8 +164,6 @@ export default function App() {
       </Modal>
 
     </SafeAreaView>
-
-
 
   );
 }
@@ -178,7 +242,8 @@ const styles = StyleSheet.create({
 
   panel: {
     flex:1,
-    backgroundColor: 'rgba(66, 66, 66, 0.4)',
+    backgroundColor: 'rgba(219, 207, 172, 0.95)',
+    justifyContent: 'flex-start',
   },
 
   panelCloseButtonContainer: {
@@ -198,6 +263,60 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     
+  },
+
+  testBox: {
+    width: "90%",
+    height: 200,
+    borderWidth: 3,
+    marginBottom: 10,
+    alignSelf: "center",
+  },
+
+  repeatStyle: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginHorizontal: 6,
+    marginVertical: 2,
+    borderRadius: 30,
+    borderWidth: 2,
+  },
+
+  repeatTextStyle: {
+    fontSize: 24,
+    color: "#000000ff",
+    alignSelf: "center"
+  },
+
+  pillSelectedStyle: {
+    backgroundColor: '#6ee749cb',
+    borderBlockColor: '#000000cb'
+  },
+
+  daysBoxContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    
+
+  },
+  dayBox: {
+    borderWidth: 1,
+    width: '20%',
+    height: '55%',
+    marginTop: 5,
+    marginLeft: 5,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  notificationToggleButtonOff: {
+    borderWidth: 3
+  },
+    notificationToggleButtonOn: {
+    borderWidth: 5,
+    backgroundColor: '#d18a38ff'
   },
 
 });
