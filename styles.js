@@ -104,6 +104,14 @@ export default StyleSheet.create({
     marginBottom: 10,
     alignSelf: "center",
   },
+  
+  /*repeatBox: {
+    width: "90%",
+    height: 200,
+    borderWidth: 3,
+    marginBottom: 10,
+    alignSelf: "center",
+  },*/
 
   repeatStyle: {
     paddingVertical: 10,

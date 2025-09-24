@@ -51,7 +51,7 @@ export default function App() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [markedDates, setMarkedDates] = useState({});
     const [highlightedTaskIds, setHighlightedTaskIds] = useState([]);
-    const [monthIndex, setMonthIndex] = useState(new Map());
+    const [biweeklyOffset, setBiweeklyOffset] = useState(0);
 
 
 //LOAD AND SAVE DATA----------------------------------------------------------
@@ -91,7 +91,6 @@ export default function App() {
       const [yStr, mStr] = currentMonth.split('-');
       const y = Number(yStr), m = Number(mStr);
       const idx = buildMonthIndex(items, y, m);
-      setMonthIndex(idx);
       setMarkedDates(computeMarkedDates(idx, selectedTaskId, selectedDate));
       if(selectedTaskId){
         setHighlightedTaskIds([selectedTaskId]);
@@ -186,6 +185,7 @@ export default function App() {
       dayOfMonthChoice,
       monthlyRepeat,
       notificationsOn,
+      biweeklyOffset,
     };
 
     insertItems((previousList) => [...previousList, newTask]);
@@ -201,6 +201,7 @@ export default function App() {
     setMonthlyRepeat('1');
     setTaskName('');
     setNotificationFlag(false);
+    setBiweeklyOffset(0);
   }
 
   return (//-----------------------------------------START OF UI HERE-----------------------------------------------
@@ -262,10 +263,21 @@ export default function App() {
 
           {/*BOX FOUR: Finalize Task Confirmation Button */}
           <View style={[styles.testBox, { height: "20%" }]}>
+            {userRepeatChoice === 'biweekly' && (
+              <TouchableOpacity onPress={() => setBiweeklyOffset((prev) => (prev === 1 ? 0 : 1))} style={[styles.buttonInteractable, biweeklyOffset === 1 && styles.buttonActive]}>
+                <Text>
+                  {biweeklyOffset === 1 ? 'Skipping Next Available Day' : 'Starting At Next Given Day'}
+                </Text>
+              </TouchableOpacity>
+            )
+
+            }
+          
+        
             {/**Add the item to the list, Set the variables back to default after finished, and then close the window.*/}
             <ConfirmTaskButton onPressConfirm={handlePressConfirm}/>
-            
           </View>
+
         </View>
 
         {/*CLOSE BUTTON FOR PANEL*/}

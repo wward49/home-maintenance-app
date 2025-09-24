@@ -32,11 +32,12 @@ export function expandTaskOccurrencesForMonth(task, year, month1to12) {
 
     // anchor for biweekly cadence
     const firstOccurFromAnchor = nextWeekdayOnOrAfter(createdAt, targetDow);
+    const offset = Number(task.biweeklyOffset ?? 0); // 0=this week, 1=next
 
     for (let cur = d; cur <= last; cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate() + 7)) {
       if (choice === 'biweekly') {
         const weeks = Math.floor((startOfDay(cur) - startOfDay(firstOccurFromAnchor)) / (7 * MS_DAY));
-        if (weeks % 2 !== 0) continue;
+        if ((weeks + offset) % 2 !== 0) continue;
       }
       occurrences.push(ymd(cur));
     }
