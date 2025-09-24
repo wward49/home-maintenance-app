@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, StyleSheet, SafeAreaView, StatusBar, Platform, TouchableOpacity, ScrollView, Button, Alert, Modal, Pressable, TextInput} from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, Alert, Modal} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import DaySelector from './myComponents/DaySelector';
 import MonthlySelector from './myComponents/MonthlySelector';
@@ -10,6 +10,10 @@ import TaskNamer from './myComponents/TaskNamer.js';
 import ToggleNotification from './myComponents/ToggleNotification.js';
 import ConfirmTaskButton from './myComponents/ConfirmTaskButton.js';
 import TaskList from './myComponents/TaskList.js';
+
+//imported helper functions for calendar:
+import { buildMonthIndex, computeMarkedDates } from './utils/recurrence';
+
 //Views are like Divs
 //Text displays text on screen
 //Function compoments
@@ -21,6 +25,9 @@ import TaskList from './myComponents/TaskList.js';
 
 const STORAGE_KEY = 'tasks_v1';
 
+
+
+
 export default function App() {
 
   //HOOKS AND VARIABLES-----------------------------------------
@@ -29,11 +36,22 @@ export default function App() {
   const [userRepeatChoice, setUserRepeatChoice] = useState('weekly');
 
   const [dayOfWeekChoice, setDayOfWeekChoice] = useState('Sun');
-  const [dayOfMonthChoice, setDayOfMonth] = useState('');
-  const [monthlyRepeat, setMonthlyRepeat] = useState('');
+  const [dayOfMonthChoice, setDayOfMonth] = useState('1');
+  const [monthlyRepeat, setMonthlyRepeat] = useState('1');
 
   const [taskName, setTaskName] = useState('');
   const [notificationsOn, setNotificationFlag] = useState(false);
+
+  //**CALENDAR HOOKS */
+    const now = new Date();
+    const [currentMonth, setCurrentMonth] = useState(
+      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    );
+    const [selectedTaskId, setSelectedTaskId] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [markedDates, setMarkedDates] = useState({});
+    const [highlightedTaskIds, setHighlightedTaskIds] = useState([]);
+    const [monthIndex, setMonthIndex] = useState(new Map());
 
 
 //LOAD AND SAVE DATA----------------------------------------------------------
@@ -66,6 +84,25 @@ export default function App() {
       }
     }) ();
   }, [items]);
+
+  //CALENDAR HELP----**MUCH OF THE CALENDAR INTERACTION IS NOT MY OWN WORK**----------------------------------
+
+    useEffect(() => {
+      const [yStr, mStr] = currentMonth.split('-');
+      const y = Number(yStr), m = Number(mStr);
+      const idx = buildMonthIndex(items, y, m);
+      setMonthIndex(idx);
+      setMarkedDates(computeMarkedDates(idx, selectedTaskId, selectedDate));
+      if(selectedTaskId){
+        setHighlightedTaskIds([selectedTaskId]);
+      }
+      else if(selectedDate){
+        setHighlightedTaskIds(Array.from(idx.get(selectedDate) || []));
+      }
+      else{
+        setHighlightedTaskIds([]);
+      }
+    }, [items, currentMonth, selectedTaskId, selectedDate]);
   
   //USER INPUT HANDLE FUNCTIONS-----------------------------------
   const show = () => setVisible(true);
@@ -87,9 +124,16 @@ export default function App() {
     );
   };
 
-  const handleOnTaskPress = () =>{
-    console.log('A Task was pressed!');
+  const handleOnTaskPress = (i, task) =>{
+    setSelectedTaskId(task.id);
+    setSelectedDate(null);
   };
+
+  const handleCalendarDayPress = ({ dateString }) => {
+  setSelectedTaskId(null);
+  setSelectedDate(dateString);
+};
+  
 //-------------BOX ONE FUNCTIONS------------------------
   const handleRepeatOptionPress = (clickedOption) => {
     setUserRepeatChoice(clickedOption);
@@ -135,6 +179,7 @@ export default function App() {
   const handlePressConfirm = () => {
     const newTask = {
       id: Date.now(),
+      createdAt: Date.now(),
       taskName,
       userRepeatChoice,
       dayOfWeekChoice,
@@ -151,9 +196,9 @@ export default function App() {
 
   const resetOptionData = () => {
     setUserRepeatChoice('weekly');
-    setDayOfMonth('');
+    setDayOfMonth('1');
     setDayOfWeekChoice('Sun');
-    setMonthlyRepeat('');
+    setMonthlyRepeat('1');
     setTaskName('');
     setNotificationFlag(false);
   }
@@ -165,17 +210,25 @@ export default function App() {
         <Calendar
           style={styles.calendarStyle}
           firstDay={1}
+          markingType='custom'
+          markedDates={markedDates}
+          onDayPress={handleCalendarDayPress}
+          onMonthChange={(m) => {
+            setCurrentMonth(`${m.year}-${String(m.month).padStart(2, '0')}`);
+          }}
           theme={{
             textDayFontSize: 16,
             textMonthFontSize: 18,
             textDayHeaderFontSize: 12,
+            dayTextColor: '#000',
+            todayTextColor: '#000',
           }}
         /> 
       </View>
 
       {/*Container for the scrollable list of tasks that have been added*/}
       <View style={styles.listOfTasks}>
-        <TaskList items={items} onTaskPress={handleOnTaskPress} onTaskLongPress={handleRemoveTaskPress}  />
+        <TaskList items={items} highlightedTaskIds={highlightedTaskIds} onTaskPress={handleOnTaskPress} onTaskLongPress={handleRemoveTaskPress}  />
       </View>
 
       {/*Container for the Button for adding tasks*/}
@@ -209,8 +262,8 @@ export default function App() {
 
           {/*BOX FOUR: Finalize Task Confirmation Button */}
           <View style={[styles.testBox, { height: "20%" }]}>
-            {/**Add the item to the list, Set the variables back to default after finished, and then close the window */}
-            <ConfirmTaskButton onPressConfirm={handlePressConfirm} disabled={!taskName.trim()}/>
+            {/**Add the item to the list, Set the variables back to default after finished, and then close the window.*/}
+            <ConfirmTaskButton onPressConfirm={handlePressConfirm}/>
             
           </View>
         </View>

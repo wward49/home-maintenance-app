@@ -167,7 +167,16 @@ export default StyleSheet.create({
     height: 60,
     borderWidth: 2,
     fontSize: 24,
-    width: '80%'
+    width: '80%',
+  },
+
+  taskItemHighlighted: { 
+    backgroundColor: '#eef6ff',
+  }, 
+
+  taskItemTextHighlighted: { 
+    color: '#1e40af', 
+    fontWeight: '700',
   },
 
 

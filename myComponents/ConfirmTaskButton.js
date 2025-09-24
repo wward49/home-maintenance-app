@@ -10,16 +10,17 @@ export default function ConfirmTaskButton({onPressConfirm}){
       /**Add the item to the list, Set the variables back to default after finished, and then close the window */
       <View>
         <Pressable
+          onPress={onPressConfirm}
+
           style={[
             styles.repeatStyle,
             {
-              height: "35%",
+              height: "60%",
               width: "50%",
               alignSelf: "center",
               marginBottom: "auto",
             },
           ]}
-          onPress={onPressConfirm}
         >
           <Text style={styles.repeatTextStyle}>Confirm Task!</Text>
         </Pressable>
