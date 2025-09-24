@@ -9,6 +9,7 @@ import RepeatSelector from './myComponents/RepeatSelector.js';
 import TaskNamer from './myComponents/TaskNamer.js';
 import ToggleNotification from './myComponents/ToggleNotification.js';
 import ConfirmTaskButton from './myComponents/ConfirmTaskButton.js';
+import TaskList from './myComponents/TaskList.js';
 //Views are like Divs
 //Text displays text on screen
 //Function compoments
@@ -67,15 +68,13 @@ export default function App() {
   }, [items]);
   
   //USER INPUT HANDLE FUNCTIONS-----------------------------------
-  const scrollRef = useRef(null);
-
   const show = () => setVisible(true);
   const hide = () => {
     setVisible(false);
     resetOptionData();
   }
 
-  const handleRemoveItemPress = (indexToRemove) => {
+  const handleRemoveTaskPress = (indexToRemove) => {
     Alert.alert('Remove Task?',
       'Task will be deleted forever',
       [{text: 'Cancel', style: 'cancel'}, 
@@ -86,6 +85,10 @@ export default function App() {
         },
       ]
     );
+  };
+
+  const handleOnTaskPress = () =>{
+    console.log('A Task was pressed!');
   };
 //-------------BOX ONE FUNCTIONS------------------------
   const handleRepeatOptionPress = (clickedOption) => {
@@ -119,18 +122,19 @@ export default function App() {
       }
   };
   //-----------------BOX THRESS FUNCTIONS------------------
-  const  handleTaskNameInput = (newTaskName) => {
+  const handleTaskNameInput = (newTaskName) => {
     setTaskName(newTaskName);
   };
 
-  const handleNotificationToggle = (flag) => {
+  const handleNotificationToggle = () => {
     console.log('Toggled Notifications');
-    setNotificationFlag(!flag);
+    setNotificationFlag(prev => !prev);
   };
 
   //------------------BOX FOUR FUNCTIONS--------------------
   const handlePressConfirm = () => {
     const newTask = {
+      id: Date.now(),
       taskName,
       userRepeatChoice,
       dayOfWeekChoice,
@@ -140,9 +144,7 @@ export default function App() {
     };
 
     insertItems((previousList) => [...previousList, newTask]);
-    requestAnimationFrame(() => {
-      scrollRef.current?.scrollToEnd({ animated: true });
-    });
+
     hide();
 
   };
@@ -173,20 +175,7 @@ export default function App() {
 
       {/*Container for the scrollable list of tasks that have been added*/}
       <View style={styles.listOfTasks}>
-        <ScrollView ref={scrollRef}>
-          {items.map((task, i) => {
-            return (
-              <TouchableOpacity
-                key={i}
-                style={styles.taskItem}
-                onPress={() => console.log('Testing Press for Calander Interactions...')}
-                onLongPress={() => handleRemoveItemPress(i)}
-              >
-                <Text style={styles.taskItemText}>{task.taskName || '(Untitled)'} - {task.userRepeatChoice}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        <TaskList items={items} onTaskPress={handleOnTaskPress} onTaskLongPress={handleRemoveTaskPress}  />
       </View>
 
       {/*Container for the Button for adding tasks*/}
@@ -221,7 +210,7 @@ export default function App() {
           {/*BOX FOUR: Finalize Task Confirmation Button */}
           <View style={[styles.testBox, { height: "20%" }]}>
             {/**Add the item to the list, Set the variables back to default after finished, and then close the window */}
-            <ConfirmTaskButton onPressConfirm={handlePressConfirm}/>
+            <ConfirmTaskButton onPressConfirm={handlePressConfirm} disabled={!taskName.trim()}/>
             
           </View>
         </View>
