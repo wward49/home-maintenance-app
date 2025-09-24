@@ -1,19 +1,11 @@
 import React, { useState } from "react";
 import { View, Pressable, Text } from "react-native";
-import styles from './styles';
+import styles from '../styles';
 
 
-export default function DaySelector(){
-const[dayOfWeekChoice, setDayOfWeekChoice] = useState('Mon');
+export default function DaySelector({value, onChange}){
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-const handleDayPress = (day) =>{
-
-    setDayOfWeekChoice(day);
-    console.log(day);
-}
-
 
 return(
 <View style={styles.daysBoxContainer}>
@@ -22,9 +14,9 @@ return(
       key={day}
       style={[
         styles.dayBox,
-        dayOfWeekChoice === day && styles.notificationToggleButtonOn,
+        value === day && styles.notificationToggleButtonOn,
       ]}
-      onPress={() => handleDayPress(day)}
+      onPress={() => onChange(day)}
     >
       <Text>{day}</Text>
     </Pressable>

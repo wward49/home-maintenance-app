@@ -143,8 +143,15 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 
+  notificationToggleButtonGeneric: {
+    alignItems: "center",
+    marginTop: '5%',
+    borderRadius: 5,
+  },
+
   notificationToggleButtonOff: {
     borderWidth: 3,
+    
 
   },
 
