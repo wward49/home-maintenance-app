@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+
 import { View, Pressable, Text } from "react-native";
 import styles from '../styles';
 
@@ -11,7 +11,7 @@ export default function ToggleNotification({notificationsOn, handleNotificationT
           style={[
             styles.notificationToggleButtonOff,
             notificationsOn
-              ? styles.notificationToggleButtonOn
+              ? styles.toggleOnStyle
               : styles.notificationToggleButtonOff,
           ]}
           onPressIn={() => handleNotificationToggle(notificationsOn)}

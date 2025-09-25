@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import {View, StyleSheet, Pressable, Text } from "react-native";
+
+import {View, Pressable, Text } from "react-native";
 import styles from '../styles';
 
 
@@ -12,17 +12,20 @@ export default function ConfirmTaskButton({onPressConfirm}){
         <Pressable
           onPress={onPressConfirm}
 
-          style={[
+          style={({pressed}) => [
             styles.repeatStyle,
             {
+              backgroundColor : '#f1d092ff',
+              marginTop: "5%",  
               height: "60%",
               width: "50%",
               alignSelf: "center",
               marginBottom: "auto",
+              opacity : pressed ? 0.5 : 1,
             },
           ]}
         >
-          <Text style={styles.repeatTextStyle}>Confirm Task!</Text>
+          <Text style={styles.offsetTextStyle}>Confirm Task!</Text>
         </Pressable>
       </View>
     );

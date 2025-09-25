@@ -1,5 +1,6 @@
 import { StyleSheet, StatusBar } from "react-native"; 
-
+//This styles page could really be reworked a lot. There are many styles that do almost the exact same thing and could be used generally by different ui components. 
+//honestly messing with styling is one of my least favorite things to do...Although it is nice when things finally start to come together after getting margins and box sizes to work out together.
 export default StyleSheet.create({
   appContainer: {
     flex: 1,
@@ -22,18 +23,21 @@ export default StyleSheet.create({
   },
   taskItem: {
     
-    backgroundColor: "#95f199ff",
+    backgroundColor: "#e4b075ff",
+    marginTop: 1,
     marginBottom: 1,
     borderRadius: 5,
     borderWidth: 2,
     borderColor: "#000000ff",
-    width: '100%',
-    height: 48,
+    width: '99%',
+    height: 52,
+    alignSelf: 'center',
 
   },
   taskItemText: {
-    fontSize: 16,
-    color: "#f100c9ff",
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: "#444444ff",
     alignSelf: "center"
   },
 
@@ -46,7 +50,7 @@ export default StyleSheet.create({
   },
   buttonInteractable: {
     flex: 1,
-    backgroundColor: '#cc3232ff',
+    backgroundColor: '#f1d69aff',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -62,10 +66,6 @@ export default StyleSheet.create({
     backgroundColor: '#aa9deeff',
     borderWidth: 2,
     borderColor: "#000000ff",
-  },
-
-  calendarStyle: {
-
   },
 
   taskSetUpContainer: {
@@ -105,14 +105,6 @@ export default StyleSheet.create({
     alignSelf: "center",
   },
   
-  /*repeatBox: {
-    width: "90%",
-    height: 200,
-    borderWidth: 3,
-    marginBottom: 10,
-    alignSelf: "center",
-  },*/
-
   repeatStyle: {
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -127,19 +119,19 @@ export default StyleSheet.create({
     color: "#000000ff",
     alignSelf: "center"
   },
-
-  pillSelectedStyle: {
-    backgroundColor: '#6ee749cb',
-    borderBlockColor: '#000000cb'
+  offsetTextStyle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: "#000000ff",
+    alignSelf: "center"
   },
 
   daysBoxContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    
-
   },
+
   dayBox: {
     borderWidth: 1,
     width: '20%',
@@ -159,11 +151,9 @@ export default StyleSheet.create({
 
   notificationToggleButtonOff: {
     borderWidth: 3,
-    
-
   },
 
-  notificationToggleButtonOn: {
+  toggleOnStyle: {
     borderWidth: 5,
     backgroundColor: '#d18a38ff',
   },
@@ -176,6 +166,7 @@ export default StyleSheet.create({
     borderWidth: 2,
     fontSize: 24,
     width: '80%',
+    marginTop: '5%',
   },
 
   taskItemHighlighted: { 
@@ -183,7 +174,7 @@ export default StyleSheet.create({
   }, 
 
   taskItemTextHighlighted: { 
-    color: '#1e40af', 
+    color: '#3d65e9ff', 
     fontWeight: '700',
   },
 

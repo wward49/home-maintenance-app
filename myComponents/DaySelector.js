@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+
 import { View, Pressable, Text } from "react-native";
 import styles from '../styles';
 
@@ -14,7 +14,7 @@ return(
       key={day}
       style={[
         styles.dayBox,
-        value === day && styles.notificationToggleButtonOn,
+        value === day && styles.toggleOnStyle,
       ]}
       onPress={() => onChange(day)}
     >

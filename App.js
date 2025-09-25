@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect} from 'react';
+import React, { useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, SafeAreaView, TouchableOpacity, Alert, Modal} from 'react-native';
 import { Calendar } from 'react-native-calendars';
@@ -14,23 +14,14 @@ import TaskList from './myComponents/TaskList.js';
 //imported helper functions for calendar:
 import { buildMonthIndex, computeMarkedDates } from './utils/recurrence';
 
-//Views are like Divs
-//Text displays text on screen
-//Function compoments
-//onPress={() => console.log("Text Clicked!")} ... ....In line function
-//const handlePress = () => console.log("Text Pressed!"); ... ...function... ...hook it up to an action like onPress
-//functions need { }...after the arrow when they are doing more than 1 thing
-//array deconstructing: const [current_vale, updater_function] = useState(firstInitialValue);
-
-
+//Key used for data persistence
 const STORAGE_KEY = 'tasks_v1';
-
-
-
 
 export default function App() {
 
   //HOOKS AND VARIABLES-----------------------------------------
+  //Many of these variables are the building blocks of 'Task' Objects that make up the TaskList component.
+  //The newTask objects are created in the handlePressConfirm() function in the 'Box Four Functions' Section.  
   const [items, insertItems] = useState([]);
   const [visible, setVisible] = useState(false);
   const [userRepeatChoice, setUserRepeatChoice] = useState('weekly');
@@ -42,7 +33,7 @@ export default function App() {
   const [taskName, setTaskName] = useState('');
   const [notificationsOn, setNotificationFlag] = useState(false);
 
-  //**CALENDAR HOOKS */
+  //**CALENDAR HOOKS -------------------------------------------*/
     const now = new Date();
     const [currentMonth, setCurrentMonth] = useState(
       `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
@@ -85,7 +76,7 @@ export default function App() {
     }) ();
   }, [items]);
 
-  //CALENDAR HELP----**MUCH OF THE CALENDAR INTERACTION IS NOT MY OWN WORK**----------------------------------
+  //CALENDAR HELP--------------------------------------
 
     useEffect(() => {
       const [yStr, mStr] = currentMonth.split('-');
@@ -104,6 +95,7 @@ export default function App() {
     }, [items, currentMonth, selectedTaskId, selectedDate]);
   
   //USER INPUT HANDLE FUNCTIONS-----------------------------------
+  //Most of these are passed as props to components in order connect user input to the variables at the top of this page.
   const show = () => setVisible(true);
   const hide = () => {
     setVisible(false);
@@ -176,6 +168,7 @@ export default function App() {
 
   //------------------BOX FOUR FUNCTIONS--------------------
   const handlePressConfirm = () => {
+    //New task object is created here, sent to the TaskList. Any future information about a task should likely be added here.
     const newTask = {
       id: Date.now(),
       createdAt: Date.now(),
@@ -187,13 +180,11 @@ export default function App() {
       notificationsOn,
       biweeklyOffset,
     };
-
     insertItems((previousList) => [...previousList, newTask]);
-
     hide();
-
   };
 
+  //This is hooked up to whenever the window clsoes to reset the values of any user input that was given. That way opening with the 'Add Task' button will always give a fresh page. 
   const resetOptionData = () => {
     setUserRepeatChoice('weekly');
     setDayOfMonth('1');
@@ -202,7 +193,7 @@ export default function App() {
     setTaskName('');
     setNotificationFlag(false);
     setBiweeklyOffset(0);
-  }
+  };
 
   return (//-----------------------------------------START OF UI HERE-----------------------------------------------
     <SafeAreaView style={styles.appContainer}>
@@ -235,7 +226,7 @@ export default function App() {
       {/*Container for the Button for adding tasks*/}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buttonInteractable} onPress={show}>
-          <Text>Add Item</Text>
+          <Text>Add Task</Text>
         </TouchableOpacity>
       </View>
 
@@ -243,7 +234,7 @@ export default function App() {
       <Modal visible={visible} transparent animationType="slide">
         {/*Panel Itself */}
         <View style={styles.panel}> 
-          {/*BOX ONE: Repeat Selector */}
+          {/*BOX ONE: Repeat Selector...pick weekly, biweekly, or monthly repeat for your task. */}
           <View style={styles.testBox}>
             <RepeatSelector selected={userRepeatChoice} onChangeRepeatChoice={handleRepeatOptionPress}/>
           </View>
@@ -254,27 +245,27 @@ export default function App() {
             {userRepeatChoice === "monthly" ? <MonthlySelector monthlyRepeat={monthlyRepeat} onChangeGap={handleRepeatGap} dayOfMonth={dayOfMonthChoice} onChangeDayOfMonth={handleDayInput}/> : <DaySelector value={dayOfWeekChoice} onChange={handleDayPress} />}
           </View>
 
-          {/*BOX THREE: Task Name and Notification Selector */}
+          {/*BOX THREE: Task Name and and Toggle for Biweekly offset. The Biweekly offset is for letting the user pick if they want the current week to be counted or not.*/}
           <View style={styles.testBox}>
-            {/**User types a name and then picks whether to have notifications sent to phone or not. */}
-            <TaskNamer taskName={taskName} handleTaskNameInput={handleTaskNameInput}/>
-            <ToggleNotification notificationsOn={notificationsOn} handleNotificationToggle={handleNotificationToggle}/>
-          </View>
-
-          {/*BOX FOUR: Finalize Task Confirmation Button */}
-          <View style={[styles.testBox, { height: "20%" }]}>
+            {/**This section could probably be implimented in a better way. It would make more sense to let the user give a start date and go from there. Currently it is confusing.*/}
             {userRepeatChoice === 'biweekly' && (
-              <TouchableOpacity onPress={() => setBiweeklyOffset((prev) => (prev === 1 ? 0 : 1))} style={[styles.buttonInteractable, biweeklyOffset === 1 && styles.buttonActive]}>
-                <Text>
+              <TouchableOpacity onPress={() => setBiweeklyOffset((prev) => (prev === 1 ? 0 : 1))} style={[styles.repeatStyle, biweeklyOffset === 1 && styles.toggleOnStyle]}>
+                <Text style={styles.offsetTextStyle}>
                   {biweeklyOffset === 1 ? 'Skipping Next Available Day' : 'Starting At Next Given Day'}
                 </Text>
               </TouchableOpacity>
             )
+            }      
 
-            }
-          
-        
+            {/**User input for naming the Task. */}
+            <TaskNamer taskName={taskName} handleTaskNameInput={handleTaskNameInput}/>
+          </View>
+
+          {/*BOX FOUR: Finalize Task Confirmation Button */}
+          <View style={[styles.testBox, { height: "20%" }]}>   
             {/**Add the item to the list, Set the variables back to default after finished, and then close the window.*/}
+            {/**Toggle Notification Button is added, but functionality not yet implemented */}
+            <ToggleNotification notificationsOn={notificationsOn} handleNotificationToggle={handleNotificationToggle}/> 
             <ConfirmTaskButton onPressConfirm={handlePressConfirm}/>
           </View>
 

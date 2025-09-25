@@ -96,7 +96,7 @@ export function computeMarkedDates(monthIndex, selectedTaskId, selectedDate) {
         marks[ds] = {
           ...(marks[ds] || {}),
           selected: true,
-          selectedColor: '#4CAF50',
+          selectedColor: '#5997caff',
           selectedTextColor: '#fff',
         };
       }
@@ -105,7 +105,7 @@ export function computeMarkedDates(monthIndex, selectedTaskId, selectedDate) {
     marks[selectedDate] = {
       ...(marks[selectedDate] || {}),
       selected: true,
-      selectedColor: '#4CAF50',
+      selectedColor: '#5997caff',
       selectedTextColor: '#fff',
     };
   }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+
 import { View, Pressable, Text } from "react-native";
 import styles from '../styles';
 
@@ -16,7 +16,7 @@ export default function RepeatSelector({selected, onChangeRepeatChoice}){
             onPress={() => onChangeRepeatChoice(option)}
             style={[
               styles.repeatStyle,
-              selected === option && styles.notificationToggleButtonOn,
+              selected === option && styles.toggleOnStyle,
             ]}
           >
             <Text style={styles.repeatTextStyle}>{option}</Text>
