@@ -25,3 +25,7 @@ I was fairly new to using React/Native, so a lot of the what I did in the beginn
 -As stated earlier, the biweekly repeater and calendar need to be refactored. They work, but it isnt very intuitive.
 
 # Overall this was an awesome project that i wanted to do and am happy that I was able to get it to where it is. It has a lot of avenues for improvement, but in it's current state it does exactly what I want it to and solves the problem I set out to fix. 
+![App Image](https://github.com/wward49/home-maintenance-app/blob/master/ImagesHM/Screenshot_20250926_144302_Expo%20Go.jpg)
+![App Image](https://github.com/wward49/home-maintenance-app/blob/master/ImagesHM/Screenshot_20250926_144308_Expo%20Go.jpg) ![App Image](https://github.com/wward49/home-maintenance-app/blob/master/ImagesHM/Screenshot_20250926_144356_Expo%20Go.jpg)
+![App Image](https://github.com/wward49/home-maintenance-app/blob/master/ImagesHM/Screenshot_20250926_144740_Expo%20Go.jpg) ![App Image](https://github.com/wward49/home-maintenance-app/blob/master/ImagesHM/Screenshot_20250926_144747_Expo%20Go.jpg)
+
